@@ -1,0 +1,17 @@
+Feedback and Grade for hw02
+---------------------------
+
+Grade:
+-----
+
+
+Comments:
+---------
+
+* The name of the file should be ReadMe.txt instead of Readme.txt.
+
+* Well-documented comprehensive Startup.java. Good.
+
+* Good documentation. But Typically javadoc of a method includes the description of the method at the top and the specs of param, return, etc. follows the description. You just did the other way. Please see a change I made in your SiinglyLinkedList.java file
+
+* All tests pass. Very Good.

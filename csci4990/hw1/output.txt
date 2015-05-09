@@ -1,0 +1,15 @@
+1) 8746453, Joe Smith (J), 75 85 80, Average Grade: 80.0 (B)
+2) 2983257, Brian Brown (S), 80 70 74, Average Grade: 74.67 (C)
+3) 1278496, Fred Clarke (J), 60 65 70, Average Grade: 65.0 (C)
+4) 2765192, Brett Winn (G), 80 84 88, Average Grade: 84.0 (B)
+5) 8392746, Jane Doe (J), 50 60 54, Average Grade: 54.67 (D)
+6) Jack Clint, Incorrect or Incomplete Data
+7) 3871932, Kyle McAllister (S), 90 80 84, Average Grade: 84.67 (B)
+8) 8264529, Michael Bluth (S), 100 90 94, Average Grade: 94.67 (A)
+9) 2983742, Mark Duhon (S), 60 50 0, Average Grade: 36.67 (F)
+10) Bill Harwich, Incorrect or Incomplete Data
+11) 1928374, Claire Rouse (G), 90 94 98, Average Grade: 94.0 (A)
+12) 1234567, Mike Jones (J), 100 91 80, Average Grade: 90.33 (A)
+13) 2993874, Kelly Alexander (S), 70 60 64, Average Grade: 64.67 (D)
+14) Allison Jefferson, Incorrect or Incomplete Data
+15) 2873921, Greg Walton (G), 70 74 76, Average Grade: 73.33 (F)

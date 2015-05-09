@@ -1,0 +1,396 @@
+Steven Tardo and Philip Williams
+This file contains all 25 queries required
+for the WorkforceIS database and applications.
+
+#1
+SELECT name
+FROM person NATURAL JOIN works NATURAL JOIN job
+WHERE comp_id = '00001';
+
+
+#2
+SELECT pay_rate, name
+FROM person NATURAL JOIN works NATURAL JOIN Job
+WHERE comp_id = *
+ORDER BY pay_rate desc;
+
+
+#3
+WITH salary_sum AS (SELECT name,
+	CASE 
+	WHEN pay_type = 'W' THEN SUM(pay_rate * 1920)
+	WHEN pay_type = 'S' THEN SUM(pay_rate)
+	END AS sum_salary
+	FROM job NATURAL JOIN company
+WHERE comp_id = '00001' GROUP BY name, pay_type)
+SELECT name, SUM(sum_salary) FROM salary_sum GROUP BY name;
+
+
+#4
+SELECT title
+FROM works NATURAL JOIN person NATURAL JOIN job_profile NATURAL JOIN job
+WHERE name = 'Person 1';
+
+
+#5
+SELECT name
+FROM person NATURAL JOIN works NATURAL JOIN project NATURAL JOIN job_project
+WHERE title = 'Project 1';
+
+
+#6
+SELECT ks_code, title, description, lvl
+FROM person NATURAL JOIN person_skill NATURAL JOIN knowledge_skill
+WHERE name = 'Person 1'
+ORDER BY lvl;
+
+
+#7
+SELECT ks_code
+FROM Requires
+WHERE pos_code = (SELECT pos_code FROM job NATURAL JOIN job_profile NATURAL JOIN works NATURAL JOIN person
+WHERE name = 'Person 1')
+MINUS 
+SELECT ks_code
+FROM person NATURAL JOIN person_skill NATURAL JOIN works
+WHERE name = 'Person 1';
+
+
+#8
+SELECT ks_code, description, lvl
+FROM Requires NATURAL JOIN Knowledge_skill
+WHERE pos_code = '00001'
+ORDER BY lvl;
+
+
+#9
+SELECT ks_code
+FROM requires
+WHERE pos_code = '00001'
+MINUS
+SELECT ks_code
+FROM person_skill NATURAL JOIN person
+WHERE name = 'Person 4';
+
+
+#10
+SELECT c_code, title
+FROM Course c
+WHERE NOT EXISTS((SELECT ks_code
+FROM Requires
+WHERE pos_code = '00003')
+MINUS
+(SELECT ks_code
+FROM course_set c2
+WHERE c2.c_code = c.c_code));
+
+
+#11
+SELECT c_code, title
+FROM Course c
+WHERE EXISTS ((SELECT ks_code
+FROM Requires
+WHERE pos_code = '00003')
+MINUS
+(select ks_code
+from person_skill NATURAL JOIN person
+where name = 'Person 3')) AND
+NOT EXISTS(((SELECT ks_code
+FROM Requires
+WHERE pos_code = '00003')
+MINUS
+(select ks_code
+from person_skill NATURAL JOIN person
+where name = 'Person 3'))
+MINUS
+(SELECT ks_code
+FROM course_set c2
+WHERE c2.c_code = c.c_code));
+
+
+#12
+WITH coursesNeeded AS (SELECT c_code, title
+FROM Course c
+WHERE EXISTS ((SELECT ks_code
+FROM Requires
+WHERE pos_code = '00003')
+MINUS
+(select ks_code
+from person_skill NATURAL JOIN person
+where name = 'Person 4')) AND
+NOT EXISTS(((SELECT ks_code
+FROM Requires
+WHERE pos_code = '00003')
+MINUS
+(select ks_code
+from person_skill NATURAL JOIN person
+where name = 'Person 4'))
+MINUS
+(SELECT ks_code
+FROM course_set c2
+WHERE c2.c_code = c.c_code)))
+SELECT c_code, title, sec_number, complete_date from
+coursesNeeded natural join section
+WHERE complete_date = (SELECT MIN(complete_date) from section);
+
+
+#13
+WITH CourseSet_Skill(csetID, ks_code) AS (
+SELECT csetID, ks_code
+FROM CourseSet CSet JOIN Course_set CS ON CSet.c_code1=CS.c_code
+UNION
+SELECT csetID, ks_code
+FROM CourseSet CSet JOIN Course_Set CS ON CSet.c_code2=CS.c_code
+UNION
+SELECT csetID, ks_code
+FROM CourseSet CSet JOIN Course_Set CS ON CSet.c_code3=CS.c_code
+),
+Cover_CSet(csetID, setSize) AS (
+SELECT csetID, setSize
+FROM CourseSet CSet
+WHERE NOT EXISTS (
+SELECT ks_code
+FROM Requires
+WHERE pos_code = '00001'
+MINUS
+SELECT ks_code
+FROM CourseSet_Skill CSSk
+WHERE CSSk.csetID = Cset.csetID))
+SELECT csetid, c_code1, c_code2, c_code3
+FROM Cover_CSet NATURAL JOIN CourseSet
+WHERE setSize = (SELECT MIN(setSize) FROM Cover_CSet);
+
+
+#14
+WITH CourseSet_Skill(csetID, ks_code) AS (
+SELECT csetID, ks_code
+FROM CourseSet CSet JOIN Course_set CS ON CSet.c_code1=CS.c_code
+UNION
+SELECT csetID, ks_code
+FROM CourseSet CSet JOIN Course_Set CS ON CSet.c_code2=CS.c_code
+UNION
+SELECT csetID, ks_code
+FROM CourseSet CSet JOIN Course_Set CS ON CSet.c_code3=CS.c_code
+),
+Cover_CSet(csetID, setSize) AS (
+SELECT csetID, setSize
+FROM CourseSet CSet
+WHERE EXISTS ((SELECT ks_code
+FROM Requires
+WHERE pos_code = '00003')
+MINUS
+(select ks_code
+from person_skill
+where per_id = '00003')) AND
+NOT EXISTS(((SELECT ks_code
+FROM Requires
+WHERE pos_code = '00003')
+MINUS
+(select ks_code
+from person_skill
+where per_id = '00003'))
+MINUS(
+SELECT ks_code
+FROM CourseSet_Skill CSSk
+WHERE CSSk.csetID = Cset.csetID)))
+SELECT csetID, c_code1, c_code2, c_code3
+FROM Cover_CSet NATURAL JOIN CourseSet
+WHERE setSize = (SELECT MIN(setSize) FROM Cover_CSet);
+
+
+#15
+WITH CourseSet_Skill(csetID, ks_code) AS (SELECT csetID, ks_code FROM CourseSet CSet JOIN Course_set CS ON CSet.c_code1=CS.c_code UNION SELECT csetID, ks_code FROM CourseSet CSet JOIN Course_Set CS ON CSet.c_code2=CS.c_code UNION SELECT csetID, ks_code FROM CourseSet CSet JOIN Course_Set CS ON CSet.c_code3=CS.c_code), Cover_CSet(csetID, setSize) AS ( SELECT csetID, setSize FROM CourseSet CSet WHERE EXISTS ((SELECT ks_code FROM Requires WHERE pos_code = '00003') MINUS (select ks_code from person_skill where per_id = '00003')) AND NOT EXISTS(((SELECT ks_code FROM Requires WHERE pos_code = '00003') MINUS (select ks_code from person_skill where per_id = '00003')) MINUS( SELECT ks_code FROM CourseSet_Skill CSSk WHERE CSSk.csetID = Cset.csetID))), CourseSets AS (SELECT csetID, c_code1, c_code2, c_code3 FROM Cover_CSet NATURAL JOIN CourseSet WHERE setSize = (SELECT MIN(setSize) FROM Cover_CSet)), CoursePrice (c_code, c_price) AS (SELECT c_code, MIN(price) AS c_price FROM Course NATURAL JOIN Section GROUP BY c_code), SumOfCSet AS (SELECT csetID, c_code1, c_code2, c_code3, ((SELECT c_price FROM CoursePrice CP WHERE CP.c_code = CourseSets.c_code1) + (SELECT c_price FROM CoursePrice CP WHERE CP.c_code = CourseSets.c_code2) + NVL((SELECT c_price FROM CoursePrice CP WHERE CP.c_code = CourseSets.c_code3), 0)) as sumOfCourses FROM CourseSets) SELECT c_code1, c_code2, c_code3, sumOfCourses From SumOfCset WHERE sumOfCourses = (SELECT MIN(sumOfCourses) FROM SumOfCSet);
+
+						  
+#16
+select distinct pos_code
+from job_profile P
+where not exists ((select ks_code
+from requires PS
+where PS.pos_code= P.pos_code)
+MINUS
+(select ks_code
+from person_skill NATURAL JOIN person
+where name = '00002'));
+
+
+#17
+WITH QP AS (
+SELECT distinct pos_code
+FROM job_profile P
+WHERE NOT EXISTS((SELECT ks_code
+FROM requires
+WHERE pos_code = P.pos_code)
+MINUS (SELECT ks_code
+FROM person_skill NATURAL JOIN person
+WHERE name =  '00001'))),
+pos_payrate AS (
+SELECT pos_code, MAX(Pay_rate) AS hpay
+FROM QP NATURAL JOIN job
+GROUP BY pos_code)
+SELECT pos_code, hpay
+FROM Pos_Payrate WHERE hpay = (SELECT MAX(hpay) FROM pos_payrate);
+
+
+#18
+WITH PersonRequiredSkillCnt(per_id, skillCnt) AS (
+SELECT per_id, COUNT(ks_code)
+FROM person_skill NATURAL JOIN requires
+WHERE pos_code = '00005'
+GROUP BY per_id),
+requiredSkillCnt(cnt) AS (
+SELECT COUNT(*) FROM requires
+WHERE pos_Code = '00005')
+SELECT name, email
+FROM PersonRequiredSkillCnt NATURAL JOIN requiredSkillCnt NATURAL JOIN person
+WHERE skillCnt = cnt;
+
+
+#19
+SELECT name
+FROM person NATURAL JOIN (
+SELECT distinct per_id 
+FROM person rs1
+WHERE 1  = (SELECT COUNT(*) 
+FROM (SELECT ks_code
+FROM requires
+WHERE pos_code = '00006'
+MINUS
+SELECT ks_code
+FROM person_skill rs2
+WHERE rs2.per_id = rs1.per_id)));
+
+
+#20
+WITH requiredSkill(ks_code) AS (
+SELECT ks_code FROM requires WHERE pos_code = '00006'),
+Missing1List(per_id) AS (
+SELECT per_id
+FROM (
+SELECT distinct per_id 
+FROM person rs1
+WHERE 1  = (SELECT COUNT(*) 
+FROM (SELECT ks_code
+FROM requires
+WHERE pos_code = '00006'
+MINUS
+SELECT ks_code
+FROM person_skill rs2
+WHERE rs2.per_id = rs1.per_id)))),
+PersonMissingSkill(per_id, ks_code) AS (
+SELECT per_id, ks_code
+FROM missing1List MI, requiredSkill RS
+WHERE ks_code IN
+(SELECT ks_code FROM requiredSkill
+MINUS
+SELECT ks_code
+FROM person_skill PS
+WHERE PS.per_id = MI.per_id))
+SELECT ks_code, COUNT(per_id) AS personCCnt
+FROM personmissingskill
+GROUP BY ks_code
+ORDER BY personCCnt asc;
+
+
+#21
+WITH PersonRequiredSkillCnt(per_id, skillCnt) AS (
+SELECT per_id, COUNT(ks_code)
+FROM person_skill NATURAL JOIN requires
+WHERE pos_code = '00006'
+GROUP BY per_id),
+requiredSkillCnt(cnt) AS (
+SELECT COUNT(*) FROM requires
+WHERE pos_code = '00006'
+),
+nobodyQualified as (SELECT per_id, cnt - skillCnt as leastNumber
+FROM PersonRequiredSkillCnt, requiredSkillCnt
+WHERE skillCnt = cnt -1)
+SELECT name, leastNumber from nobodyQualified NATURAL JOIN person;
+
+
+#22
+WITH requiredSkill(ks_code) AS (
+SELECT ks_code
+FROM requires
+WHERE pos_code = '00006'),
+requiredSkillCnt(cnt) AS (
+SELECT COUNT(*) FROM requires
+WHERE pos_code = '00006'
+),
+MissingKList(per_id, skillcnt) AS (
+SELECT per_id, count(ks_code) as skillcnt
+FROM person_skill NATURAL JOIN requiredSkill
+GROUP BY per_id
+HAVING COUNT(DISTINCT ks_code) + k >= (SELECT COUNT(DISTINCT ks_code) FROM requiredSkill)),
+leastMissing as (SELECT DISTINCT per_id, cnt - skillcnt as leastNumber
+FROM missingklist, requiredSkillCnt)
+SELECT name, leastNumber FROM leastMissing NATURAL JOIN person
+ORDER by leastNumber ASC, name;
+
+
+
+#23
+WITH requiredSkill(ks_code) AS (
+SELECT ks_code
+FROM requires
+WHERE pos_code = '00003'
+GROUP BY ks_code),
+requiredSkillCnt(cnt) AS (
+SELECT COUNT(*) FROM requires
+WHERE pos_code = '00003'
+),
+MissingKList(per_id, skillcnt) AS (
+SELECT per_id, count(ks_code) as skillcnt
+FROM person_skill NATURAL JOIN requiredSkill
+GROUP BY per_id HAVING COUNT(DISTINCT ks_code) <= (SELECT COUNT(DISTINCT ks_code) FROM requiredSkill)),
+skillMissing as (SELECT DISTINCT ks_code, per_id
+FROM missingklist, requiredSkill
+MINUS (SELECT ks_code, per_id from person_skill))
+select ks_code, count(*) as personCount from skillMissing group by ks_code
+order by personCount desc;
+
+
+#24
+WITH vacantJobs(pos_code, numberOfJobs) as (SELECT pos_code, COUNT(job_code) from job WHERE job_code NOT IN (SELECT job_code FROM WORKS) GROUP BY pos_code),
+unemployedPeople(per_id) AS (SELECT per_id FROM person MINUS SELECT per_id from works),
+qualifiedJobless(pos_code, numberOfPeople) AS (SELECT pos_code, COUNT(per_id) AS numberOfPeople 
+		FROM (SELECT pos_code, per_id 
+			FROM vacantJobs VJ, unemployedPeople UP 
+			WHERE NOT EXISTS ((SELECT ks_code FROM person_skill PS 
+								where PS.per_id = UP.per_id) 
+							  MINUS 
+							  (SELECT ks_code FROM requires R 
+							  WHERE R.pos_code = VJ.pos_code))) 
+		GROUP BY pos_code),
+unqualifiedJobless(pos_code, numberOfUnqualified) AS (
+	SELECT pos_code,
+	CASE
+	WHEN numberOFJobs-numberOfPeople < 0 THEN 0
+	WHEN numberOfJobs-numberOfPeople >= 0 THEN numberOfJobs-numberOFPeople
+	END as numberOfUnqualified 
+	FROM vacantJobs NATURAL JOIN qualifiedJobless)
+SELECT pos_code FROM unqualifiedJobless WHERE numberOfUnqualified = (SELECT MAX(numberOfUnqualified) FROM unqualifiedJobless) ORDER BY pos_code;
+
+
+
+#25
+WITH vacantJobs(pos_code, numberOfJobs) as (SELECT pos_code, COUNT(job_code) from job WHERE job_code NOT IN (SELECT job_code FROM WORKS) GROUP BY pos_code),
+unemployedPeople(per_id) AS (SELECT per_id FROM person MINUS SELECT per_id from works),
+qualifiedJobless(pos_code, numberOfPeople) AS (SELECT pos_code, COUNT(per_id) AS numberOfPeople 
+		FROM (SELECT pos_code, per_id 
+			FROM vacantJobs VJ, unemployedPeople UP 
+			WHERE NOT EXISTS ((SELECT ks_code FROM person_skill PS 
+								where PS.per_id = UP.per_id) 
+							  MINUS 
+							  (SELECT ks_code FROM requires R 
+							  WHERE R.pos_code = VJ.pos_code))) 
+		GROUP BY pos_code),
+unqualifiedJobless(pos_code, numberOfUnqualified) AS (
+	SELECT pos_code,
+	CASE
+	WHEN numberOFJobs-numberOfPeople < 0 THEN 0
+	WHEN numberOfJobs-numberOfPeople >= 0 THEN numberOfJobs-numberOFPeople
+	END as numberOfUnqualified 
+	FROM vacantJobs NATURAL JOIN qualifiedJobless),
+unqualifiedProfiles AS (SELECT pos_code FROM unqualifiedJobless WHERE numberOfUnqualified = (SELECT MAX(numberOfUnqualified) FROM unqualifiedJobless))
+SELECT DISTINCT c_code, title from unqualifiedProfiles NATURAL JOIN course_set NATURAL JOIN course WHERE ks_code NOT IN (SELECT ks_code from unqualifiedJobless NATURAL JOIN person_skill);

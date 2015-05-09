@@ -1,0 +1,7 @@
+# Test Project git ignore file
+
+# Ignore compiled java code
+*.class
+
+# Ignore store files
+.DS_Store

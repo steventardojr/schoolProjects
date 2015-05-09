@@ -1,0 +1,58 @@
+  
+
+<h1>Listing Work Logs</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+	  <th></th>
+	  <th></th>
+      <th>Start Time</th>
+	  <th></th>
+	  <th></th>
+      <th>End Time</th>
+	  <th></th>
+	  <th></th>
+	  <th>Time Elapsed</th>
+	  <th></th>
+	  <th></th>
+      <th colspan="0"></th>
+    </tr>
+  </thead>
+
+  <% total_work_time = 0 %>
+  <tbody>
+    <% @work_logs.each do |work_log| %>
+	<% work_time = work_log.end_time-work_log.start_time %>
+	<% total_work_time += work_time %>
+      <tr>
+        <td align=center><%= work_log.name %></td>
+		<td></td>
+		<td></td>
+        <td align=center><%= work_log.start_time.strftime('%H:%M') %></td>
+		<td></td>
+		<td></td>
+        <td align=center><%= work_log.end_time.strftime('%H:%M') %></td>
+		<td></td>
+		<td></td>
+		<td align=center><%= (work_time/3600).to_s + ' Hours'%></td>
+		<td></td>
+		<td></td>
+        <td><%= link_to 'Show', work_log %></td>
+        <td><%= link_to 'Edit', edit_work_log_path(work_log) %></td>
+        <td><%= link_to 'Destroy', work_log, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<b><%= 'Total Work Time: ' %></b>
+<%= (total_work_time/3600).to_s + ' Hours' %>
+
+<br><br>
+
+<%= link_to 'New Work Log', new_work_log_path %> |
+<%= link_to "Tasks", tasks_path %>

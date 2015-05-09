@@ -1,0 +1,7 @@
+Grade: 10/10
+
+
+1. Well-documented and well-formatter implementation of MyArrayList. Good !
+2. Your implementation of MyArrayList does not use java generics. Please learn hto use java generics.
+3. Good implementation of test code, but missing documentation.
+4. Good implementation of Startup.java.

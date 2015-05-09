@@ -1,0 +1,76 @@
+Infix to Postfix Steps:
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (]
+Postfix: 2
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +]
+Postfix: 2
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +]
+Postfix: 22
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +, -]
+Postfix: 22
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +, -]
+Postfix: 223
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +, -, *]
+Postfix: 223
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +, -, *]
+Postfix: 2234
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +, -, *, /]
+Postfix: 2234
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#, (, +, -, *, /]
+Postfix: 22345
+
+Infix:   (2+2-3*4/5)$
+Stack:   [#]
+Postfix: 22345/*-+
+
+
+
+Postfix Evaluation:
+
+Postfix: 22345/*-+$
+Stack:   [#, 2]
+
+Postfix: 22345/*-+$
+Stack:   [#, 2, 2]
+
+Postfix: 22345/*-+$
+Stack:   [#, 2, 2, 3]
+
+Postfix: 22345/*-+$
+Stack:   [#, 2, 2, 3, 4]
+
+Postfix: 22345/*-+$
+Stack:   [#, 2, 2, 3, 4, 5]
+
+Postfix: 22345/*-+$
+Stack:   [#, 2, 2, 3, 0.8]
+
+Postfix: 22345/*-+$
+Stack:   [#, 2, 2, 2.4000000000000004]
+
+Postfix: 22345/*-+$
+Stack:   [#, 2, -0.40000000000000036]
+
+Postfix: 22345/*-+$
+Stack:   [#, 1.5999999999999996]
+
+
+
+Result:  1.5999999999999996

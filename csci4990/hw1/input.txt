@@ -1,0 +1,15 @@
+Smith Joe 8746453 J 75 85 80
+Brown Brian 2983257 S 80 70 74
+Clarke Fred 1278496 J 60 65 70
+Winn Brett 2765192 G 80 84 88
+Doe Jane 8392746 J 50 60 54
+Clint Jack 238736 H 78 70 84
+McAllister Kyle 3871932 S 90 80 84
+Bluth Michael 8264529 S 100 90 94
+Duhon Mark 2983742 S 60 50 0
+Harwich Bill 2983742 T 56
+Rouse Claire 1928374 G 90 94 98
+Jones Mike 1234567 J 100 91 80
+Alexander Kelly 2993874 S 70 60 64
+Jefferson Allison 82333
+Walton Greg 2873921 G 70 74 76
